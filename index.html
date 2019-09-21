@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Giphy Homework</title>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+​
+<div id="buttons">
+  <button class="person waves-effect waves-light btn" data-person="Rick Sanchez">Rick Sanchez</button>
+  <button class="person waves-effect waves-light btn" data-person="Barney Stinson">Barney Stinson</button>
+  <button class="person waves-effect waves-light btn" data-person="Hunter Thompson">Hunter Thompson</button>
+  <button class="person waves-effect waves-light btn" data-person="Clint Eastwood">Clint Eastwood</button>
+</div>
+​
+<div class="row center input-field"> 
+  <form>
+    <label for="title">Input A Name to Generate a New Button</label>
+    <input type="text" name="title" id="personIn" class="input-field" style="width: 12%">
+    <button id="addPerson" class="btn btn-primary">Add Person</button>
+  </form>
+</div>
+  <div id="gifDisp" class="row"></div>
+
+  <script>
+  document.addEventListener('click', event => {
+    if (event.target.className === "person waves-effect waves-light btn") {
+      let person = event.target.dataset.person
+      console.log(`person is: ${person}`)
+      let url = `https://api.giphy.com/v1/gifs/search?q=${person}&api_key=dc6zaTOxFJmzC&limit=10`
+      fetch(url)
+        .then(r => r.json())
+        .then(gifs => {
+          console.log(gifs)
+          document.getElementById('gifDisp').innerHTML = ''
+          gifs.data.forEach((gif, index) => {
+            let gifElem = document.createElement('img')
+            // link to what we want to see when the page loads
+            gifElem.src = gif.images.original_still.url
+            //link to the image of the gif
+            gifElem.dataset.still = gif.images.original_still.url
+            //link to the animated gif
+            gifElem.dataset.animated = gif.images.original.url
+            //add an attribute to check if the gif is animated or not
+            gifElem.dataset.isanimated = false
+            //add a class name to add event listener
+            gifElem.className = "gif card-image col s6"
+            //add the gifElem inside the element with ID gifDisp
+            //document.getElementById('gifDisp').append(gifElem)
+
+            
+            let divElem = document.createElement('div')
+            divElem.className = "col s4"
+            divElem.id = `card${index}`
+            document.getElementById('gifDisp').append(divElem)
+            document.getElementById(`card${index}`).append(gifElem)
+          })// end forEach
+        })// end promise then
+    }//end if
+    else if(event.target.className === 'gif card-image col s6'){
+      if(event.target.isanimated === 'false'){
+        console.log(`src is: ${event.target.src}`)
+        console.log(`is it animated? ${event.target.isanimated}`)
+        event.target.src = event.target.dataset.animated
+        event.target.isanimated = 'true'
+      }
+      else{
+        event.target.src = event.target.dataset.still
+          event.target.isanimated = 'false'
+      }// end else
+    }//end else
+  })
+    //Create a button from an input
+    document.getElementById('addPerson').addEventListener('click', event =>{
+        event.preventDefault()
+        let newButton = document.createElement('button')
+        newButton.className = 'person waves-effect waves-light btn'
+        newButton.textContent = document.getElementById(`personIn`).value
+        newButton.dataset.person = document.getElementById(`personIn`).value
+        document.getElementById('buttons').append(newButton)
+        document.getElementById('personin').value = ''
+    })// add event to addPerson
+
+  </script>
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
