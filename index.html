@@ -10,21 +10,35 @@
 </head>
 <body>
 ​
-<div id="buttons">
-  <button class="person waves-effect waves-light btn" data-person="Rick Sanchez">Rick Sanchez</button>
-  <button class="person waves-effect waves-light btn" data-person="Barney Stinson">Barney Stinson</button>
-  <button class="person waves-effect waves-light btn" data-person="Hunter Thompson">Hunter Thompson</button>
-  <button class="person waves-effect waves-light btn" data-person="Clint Eastwood">Clint Eastwood</button>
+<div class="container">
+  <div id="buttons" class="row center">
+    <button class="person waves-effect waves-light btn" data-person="John Wick">John Wick</button>
+    <button class="person waves-effect waves-light btn" data-person="Barney Stinson">Barney Stinson</button>
+    <button class="person waves-effect waves-light btn" data-person="Peter Griffin">Peter Griffin</button>
+    <button class="person waves-effect waves-light btn" data-person="Thanos">Thanos</button>
+  </div>
+  ​
+  <div class="row center input-field"> 
+    <p>Enter a name to generated a new button to fetch random gifts</p>
+    <form>
+      <label for="title">Name: </label>
+      <input type="text" name="title" id="personIn" class="input-field" style="width: 12%" placeholder="Jane Doe">
+      <button id="addPerson" class="btn btn-primary model-trigger" data-target="modal">Add Person</button>
+    </form>
+  </div>
+    <div id="gifDisp" class="row center"></div>
 </div>
-​
-<div class="row center input-field"> 
-  <form>
-    <label for="title">Input A Name to Generate a New Button</label>
-    <input type="text" name="title" id="personIn" class="input-field" style="width: 12%">
-    <button id="addPerson" class="btn btn-primary">Add Person</button>
-  </form>
-</div>
-  <div id="gifDisp" class="row"></div>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Invalid Entry</h4>
+      <p>Please enter something in the 'Name' Area</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
 
   <script>
   document.addEventListener('click', event => {
@@ -38,30 +52,47 @@
           console.log(gifs)
           document.getElementById('gifDisp').innerHTML = ''
           gifs.data.forEach((gif, index) => {
-            let gifElem = document.createElement('img')
-            // link to what we want to see when the page loads
-            gifElem.src = gif.images.original_still.url
-            //link to the image of the gif
-            gifElem.dataset.still = gif.images.original_still.url
-            //link to the animated gif
-            gifElem.dataset.animated = gif.images.original.url
-            //add an attribute to check if the gif is animated or not
-            gifElem.dataset.isanimated = false
-            //add a class name to add event listener
-            gifElem.className = "gif card-image col s6"
+            // let gifElem = document.createElement('img')
+            // // link to what we want to see when the page loads
+            // gifElem.src = gif.images.original_still.url
+            // //link to the image of the gif
+            // gifElem.dataset.still = gif.images.original_still.url
+            // //link to the animated gif
+            // gifElem.dataset.animated = gif.images.original.url
+            // //add an attribute to check if the gif is animated or not
+            // gifElem.dataset.isanimated = false
+            // //add a class name to add event listener
+            // gifElem.className = "gif col s6"
             //add the gifElem inside the element with ID gifDisp
             //document.getElementById('gifDisp').append(gifElem)
 
             
             let divElem = document.createElement('div')
-            divElem.className = "col s4"
+            divElem.className = "col s4 m6"
             divElem.id = `card${index}`
+            //divElem.style.backgroundColor = `rgba(${30*index}, ${20*index}, ${10*index}, 1)`
+            divElem.innerHTML = `
+              <div class="card">
+                <div class="card-content">
+                  <div class="card-image">
+                    <img class="gif"
+                      src='${gif.images.fixed_height_still.url}'
+                      data-still='${gif.images.fixed_height_still.url}'
+                      data-animated='${gif.images.fixed_height.url}'
+                      data-isanimated='false' />  
+                  </div>
+                  <div class="card-title">
+                    <p>${gif.title}</p>
+                  </div>   
+                </div>
+              </div> 
+            `
             document.getElementById('gifDisp').append(divElem)
-            document.getElementById(`card${index}`).append(gifElem)
+            //document.getElementById(`card${index}`).append(gifElem)
           })// end forEach
         })// end promise then
     }//end if
-    else if(event.target.className === 'gif card-image col s6'){
+    else if(event.target.className === 'gif'){
       if(event.target.isanimated === 'false'){
         console.log(`src is: ${event.target.src}`)
         console.log(`is it animated? ${event.target.isanimated}`)
@@ -71,6 +102,7 @@
       else{
         event.target.src = event.target.dataset.still
           event.target.isanimated = 'false'
+          console.log(`is it animated? ${event.target.isanimated}`)
       }// end else
     }//end else
   })
@@ -79,14 +111,29 @@
         event.preventDefault()
         let newButton = document.createElement('button')
         newButton.className = 'person waves-effect waves-light btn'
-        newButton.textContent = document.getElementById(`personIn`).value
-        newButton.dataset.person = document.getElementById(`personIn`).value
-        document.getElementById('buttons').append(newButton)
-        document.getElementById('personin').value = ''
+        console.log(`value is ${document.getElementById(`personIn`).value}`)
+        if (document.getElementById(`personIn`).value !== ''){
+          newButton.textContent = document.getElementById(`personIn`).value 
+          newButton.dataset.person = document.getElementById(`personIn`).value
+          document.getElementById('buttons').append(newButton)
+          document.getElementById('personIn').value = ''
+        }
+        else{
+          swal("Please enter a name or a topic in the 'Name' text area")
+        }
+        
     })// add event to addPerson
+
+    // Inititialize Materialize Modal
+    document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems, {});
+  });
 
   </script>
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- SweetAlert Javascript-->
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </body>
 </html>
